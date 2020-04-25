@@ -1,0 +1,12 @@
+version: "3.7"
+services:
+  api:
+    image: golang:1.13
+    env_file:
+      - .env
+    volumes:
+      - .:/go/src/go-fen
+    ports:
+      - 8080:${PORT}
+    working_dir: /go/src/go-fen
+    command: go run main.go

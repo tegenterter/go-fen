@@ -15,7 +15,11 @@ import (
 	"unicode"
 )
 
-const dimension = 45
+var (
+	port = os.Getenv("PORT")
+	dimension, _ = strconv.Atoi(os.Getenv("DIMENSION"))
+	assetsPath = os.Getenv("ASSETS_PATH")
+)
 
 func drawDiagram(fen string) image.Image {
 	// Draw an empty board
@@ -81,7 +85,7 @@ func getPiece(character uint8) image.Image {
 		piece = "b" + string(character)
 	}
 
-	image, err := os.Open("assets/" + piece + ".png")
+	image, err := os.Open(assetsPath + "/" + piece + ".png")
 	second, err := png.Decode(image)
 	defer image.Close()
 
@@ -93,8 +97,6 @@ func getPiece(character uint8) image.Image {
 }
 
 func main() {
-	log.SetOutput(os.Stderr)
-
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		fen := r.URL.Path[1:]
 		rgxp := regexp.MustCompile(`(?i)^[rnbqk1-8]{1,8}\/[rnbqkp1-8]{1,8}\/[rnbqkp1-8]{1,8}\/[rnbqkp1-8]{1,8}\/[rnbqkp1-8]{1,8}\/[rnbqkp1-8]{1,8}\/[rnbqkp1-8]{1,8}\/[rnbqk1-8]{1,8}\s[wb]{1}\s[kq-]{1,4}\s[a-h1-8-]{1,2}\s\d+\s\d+$`)
@@ -126,5 +128,5 @@ func main() {
 		log.Println("GET", http.StatusOK, "/" + fen)
 	})
 
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	log.Fatal(http.ListenAndServe(":" + port, nil))
 }
