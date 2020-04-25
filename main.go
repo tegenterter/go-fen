@@ -2,11 +2,11 @@ package main
 
 import (
 	"bytes"
-	"fmt"
 	"image"
 	"image/color"
 	"image/draw"
 	"image/png"
+	"log"
 	"net/http"
 	"os"
 	"regexp"
@@ -83,36 +83,48 @@ func getPiece(character uint8) image.Image {
 
 	image, err := os.Open("assets/" + piece + ".png")
 	second, err := png.Decode(image)
-	if err != nil {
-		panic(err.Error())
-	}
 	defer image.Close()
+
+	if err != nil {
+		log.Fatal(err.Error())
+	}
 
 	return second
 }
 
 func main() {
+	log.SetOutput(os.Stderr)
+
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		fen := r.URL.Path[1:]
-		rgxp := regexp.MustCompile(`(?i)^[rnbqk1-7]{1,8}\/[rnbqkp1-7]{1,8}\/[rnbqkp1-7]{1,8}\/[rnbqkp1-7]{1,8}\/[rnbqkp1-7]{1,8}\/[rnbqkp1-7]{1,8}\/[rnbqkp1-7]{1,8}\/[rnbqk1-7]{1,8}\sw|b\sk|q|-\s\d+\s\d+$`)
+		rgxp := regexp.MustCompile(`(?i)^[rnbqk1-8]{1,8}\/[rnbqkp1-8]{1,8}\/[rnbqkp1-8]{1,8}\/[rnbqkp1-8]{1,8}\/[rnbqkp1-8]{1,8}\/[rnbqkp1-8]{1,8}\/[rnbqkp1-8]{1,8}\/[rnbqk1-8]{1,8}\s[wb]{1}\s[kq-]{1,4}\s[a-h1-8-]{1,2}\s\d+\s\d+$`)
 
 		if rgxp.MatchString(fen) == false {
 			http.Error(w, "Invalid FEN string", http.StatusBadRequest)
-
-			fmt.Println("GET", http.StatusBadRequest, "/" + fen)
+			log.Println("GET", http.StatusBadRequest, "/" + fen)
 			return
 		}
 
-		buffer := new(bytes.Buffer)
 		// Generate the diagram
-		png.Encode(buffer, drawDiagram(fen))
+		buffer := new(bytes.Buffer)
+		err := png.Encode(buffer, drawDiagram(fen))
 
-		fmt.Println("GET", http.StatusOK, "/" + fen)
+		if err != nil {
+			http.Error(w, "Could not generate diagram", http.StatusInternalServerError)
+			log.Println("GET", http.StatusBadRequest, "/" + fen)
+			return
+		}
 
 		w.Header().Set("Content-Type", "image/png")
 		w.Header().Set("Content-Length", strconv.Itoa(len(buffer.Bytes())))
-		w.Write(buffer.Bytes())
+		_, err = w.Write(buffer.Bytes())
+
+		if err != nil {
+			log.Fatal(err.Error())
+		}
+
+		log.Println("GET", http.StatusOK, "/" + fen)
 	})
 
-	http.ListenAndServe(":8080", nil)
+	log.Fatal(http.ListenAndServe(":8080", nil))
 }
