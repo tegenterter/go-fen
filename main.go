@@ -19,12 +19,23 @@ var (
 	port = os.Getenv("PORT")
 	dimension, _ = strconv.Atoi(os.Getenv("DIMENSION"))
 	assetsPath = os.Getenv("ASSETS_PATH")
+	lightSquareRGB = strings.Split(os.Getenv("LIGHT_SQUARE_RGB"), ",")
+	darkSquareRGB = strings.Split(os.Getenv("DARK_SQUARE_RGB"), ",")
 )
 
 func drawDiagram(fen string) image.Image {
-	// Draw an empty board
-	board := drawBoard(dimension, color.RGBA{209, 139, 71, 255}, color.RGBA{255, 206, 158, 255})
+	// Parse square colors from configuration
+	lr, _ := strconv.Atoi(lightSquareRGB[0])
+	lg, _ := strconv.Atoi(lightSquareRGB[1])
+	lb, _ := strconv.Atoi(lightSquareRGB[2])
+	dr, _ := strconv.Atoi(darkSquareRGB[0])
+	dg, _ := strconv.Atoi(darkSquareRGB[1])
+	db, _ := strconv.Atoi(darkSquareRGB[2])
 
+	// Draw an empty board
+	board := drawBoard(dimension, color.RGBA{R: uint8(lr), G: uint8(lg), B: uint8(lb), A: 255}, color.RGBA{R: uint8(dr), G: uint8(dg), B: uint8(db), A: 255})
+
+	//noinspection SpellCheckingInspection
 	rgxp := regexp.MustCompile(`(?i)^[a-z\d+\/]+`)
 
 	// Iterate the separate ranks as defined in the FEN string
@@ -41,7 +52,7 @@ func drawDiagram(fen string) image.Image {
 				k += emptySquares
 			} else {
 				// Draw the piece onto the board
-				draw.Draw(board, image.Rect(0, 0, dimension, dimension).Add(image.Point{k * dimension, i * dimension}), getPiece(row[j]), image.Point{}, draw.Over)
+				draw.Draw(board, image.Rect(0, 0, dimension, dimension).Add(image.Point{X: k * dimension, Y: i * dimension}), getPiece(row[j]), image.Point{}, draw.Over)
 				k++
 			}
 		}
@@ -66,7 +77,7 @@ func drawBoard(squareDimension int, lightColor color.RGBA, darkColor color.RGBA)
 			file := j * dimension
 
 			// Draw an individual square
-			draw.Draw(board, image.Rect(rank, file, rank + dimension, file + dimension), &image.Uniform{colors[c]}, image.Point{}, draw.Src)
+			draw.Draw(board, image.Rect(rank, file, rank + dimension, file + dimension), &image.Uniform{C: colors[c]}, image.Point{}, draw.Src)
 
 			c = 1 - c
 		}
