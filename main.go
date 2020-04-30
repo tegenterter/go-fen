@@ -34,8 +34,7 @@ func drawDiagram(fen string) image.Image {
 
 	// Draw an empty board
 	board := drawBoard(dimension, color.RGBA{R: uint8(lr), G: uint8(lg), B: uint8(lb), A: 255}, color.RGBA{R: uint8(dr), G: uint8(dg), B: uint8(db), A: 255})
-
-	//noinspection SpellCheckingInspection
+	
 	rgxp := regexp.MustCompile(`(?i)^[a-z\d+\/]+`)
 
 	// Iterate the separate ranks as defined in the FEN string
