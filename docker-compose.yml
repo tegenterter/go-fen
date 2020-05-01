@@ -1,9 +1,8 @@
 version: "3.7"
 services:
   api:
-    image: golang:1.13
+    image: golang:latest
     environment:
-      - PORT=8080
       - DIMENSION=45
       - ASSETS_PATH=assets/default
       - LIGHT_SQUARE_RGB=209,139,71

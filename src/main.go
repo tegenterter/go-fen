@@ -16,7 +16,6 @@ import (
 )
 
 var (
-	port = os.Getenv("PORT")
 	dimension, _ = strconv.Atoi(os.Getenv("DIMENSION"))
 	assetsPath = os.Getenv("ASSETS_PATH")
 	lightSquareRGB = strings.Split(os.Getenv("LIGHT_SQUARE_RGB"), ",")
@@ -138,5 +137,5 @@ func main() {
 		log.Println("GET", http.StatusOK, "/" + fen)
 	})
 
-	log.Fatal(http.ListenAndServe(":" + port, nil))
+	log.Fatal(http.ListenAndServe(":8080", nil))
 }
