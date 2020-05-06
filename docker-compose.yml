@@ -3,8 +3,8 @@ services:
   api:
     image: golang:latest
     environment:
-      - DIMENSION=60
-      - ASSETS_PATH=assets/standardx60
+      - DIMENSION=46
+      - ASSETS_PATH=assets/default
       - LIGHT_SQUARE_RGB=209,139,71
       - DARK_SQUARE_RGB=255,206,158
     volumes:
