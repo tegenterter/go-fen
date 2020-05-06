@@ -1,7 +1,7 @@
 #!/bin/bash
 docker build . \
     -t $IMAGE_NAME \
-    --build-arg DIMENSION=60 \
-    --build-arg ASSETS_PATH=assets/standardx60 \
+    --build-arg DIMENSION=46 \
+    --build-arg ASSETS_PATH=assets/default \
     --build-arg LIGHT_SQUARE_RGB=209,139,71 \
     --build-arg DARK_SQUARE_RGB=255,206,158 \
